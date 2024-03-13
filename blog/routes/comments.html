@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+ $(document).ready(function() {
+            // Function to load comments
+            function loadComments() {
+                $.ajax({
+                    url: "../logic/comments.php",
+                    type: "GET",
+                    success: function(data) {
+                        $("#comments").html(data);
+                    }
+                });
+            }
+
+            // Load comments on page load
+            loadComments();
+
+            // Submit comment on form submission
+            $("#commentForm").submit(function(e) {
+                e.preventDefault();
+                
+                var name = $("#name").val();
+                var comment = $("#comment").val();
+
+                $.ajax({
+                    url: "../logic/post_comment.php",
+                    type: "POST",
+                    data: { name: name, comment: comment },
+                    success: function(data) {
+                        if (data.success) {
+                            loadComments();
+                        } else {
+                            alert(data.error); // Display any error message
+                        }
+                    }
+                });
+                loadComments();
+            });
+
+            // (Optional) Implement logic for polling new comments periodically (less efficient)
+            setInterval(loadComments, 1000); // Check for new comments every 10 seconds
+        });
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background-color: #04151f;
+            color: antiquewhite;
+        }
+
+        #comment-container {
+            height: 50dvh; /* Adjust height as needed */
+            overflow: auto;
+        }
+        #comments{
+            overflow-wrap: break-word;
+            hyphens: manual;
+        }
+        .active {
+            font-size: 24px;
+        }
+    </style>
+    <title>Registration</title>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li class="active"><a href="comments.html">chat</a></li>
+        <li><a href="script.php">Our Story</a></li>
+    </ul>
+</nav>
+<form id="commentForm">
+    <textarea id="comment" name="comment" rows="5" value="comment" required></textarea>
+    <input type="submit" value="post">
+</form>
+<div id="comment-container">
+    <div id="comments"></div>
+</div>
+
+</body>
+</html>
+
